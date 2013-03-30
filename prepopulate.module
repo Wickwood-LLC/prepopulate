@@ -24,6 +24,35 @@ function prepopulate_help($path, $arg) {
  * Implementation of hook_form_alter().
  */
 function prepopulate_form_alter(&$form, $form_state, $form_id) {
+  dsm('prepopulate_form_alter called');
+  dsm($_REQUEST);
+  
+  foreach ($_REQUEST as $key => $value) {
+  	dsm('$key = ' . $key);
+  	unset ($_REQUEST[$key]);
+  	
+  	$new_key = urldecode($key);
+  	dsm('$new_key = ' . $new_key);
+  	
+  	$temp = &$_REQUEST;
+  	
+  	if(strchr($new_key,'[') && strchr($new_key,']')){
+  		$key_string = str_ireplace(']','',$new_key);
+  		$new_keys = explode('[',$key_string);
+  		
+  		foreach ($new_keys as $nested_key) {
+  			if(!isset($temp[$nested_key])) {
+  			 $temp[$nested_key] = array();
+  			}
+  			$temp = &$temp[$nested_key];  //references to the last created, most nested array
+  		}
+  		$temp = $value;
+  	} else {
+			$_REQUEST[$new_key] = $value;
+		} 
+  }
+  
+  dsm($_REQUEST);
   // Provide for accepting base64 encoded fields.
   if (isset($_REQUEST['pp'])) {
     parse_str(base64_decode($_REQUEST['pp']), $_REQUEST);
@@ -37,6 +66,8 @@ function prepopulate_form_alter(&$form, $form_state, $form_id) {
  * An #after_build function to set the values prepopulated in the request.
  */
 function prepopulate_after_build($form, &$form_state) {
+  dsm('prepopulate_after_build called');
+  
   if (isset($_REQUEST['pp'])) {
     parse_str(base64_decode($_REQUEST['pp']), $_REQUEST);
   }
