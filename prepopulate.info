@@ -1,3 +1,4 @@
 name = Prepopulate
-description = Allows form elements to be prepopulated from the URL.
+description = Allows form elements to be prepopulated from the URL.  Modified by WWM to allow prepopulation from links created with Views.
 core = 7.x
+version = 7.x-2.x-dev-wwm
